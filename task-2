@@ -1,0 +1,29 @@
+import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+
+sunset_url = 'https://images.unsplash.com/photo-1518837695005-2083093ee35b'
+mountain_url = 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0'
+
+sunset_img_path = tf.keras.utils.get_file('sunset.jpg', sunset_url)
+mountain_img_path = tf.keras.utils.get_file('mountain.jpg', mountain_url)
+
+def load_and_process_image(image_path):
+    img = tf.keras.preprocessing.image.load_img(image_path)
+    img = tf.keras.preprocessing.image.img_to_array(img)
+    img = tf.image.resize(img, (512, 512)) 
+    img = np.expand_dims(img, axis=0)
+    return img
+
+def display_image(img_array, title):
+    img = np.squeeze(img_array, axis=0).astype('uint8')
+    plt.imshow(img)
+    plt.title(title, fontsize=16)
+    plt.axis('off')
+    plt.show()
+
+sunset_image = load_and_process_image(sunset_img_path)
+display_image(sunset_image, title="Beautiful Sunset")
+
+mountain_image = load_and_process_image(mountain_img_path)
+display_image(mountain_image, title="Majestic Mountain Landscape")
