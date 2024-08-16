@@ -1,0 +1,31 @@
+!pip install -q transformers
+
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+torch_device = "cuda" if torch.cuda.is_available() else "cpu"
+tokenizer = AutoTokenizer.from_pretrained("gpt2")
+model = AutoModelForCausalLM.from_pretrained("gpt2", pad_token_id=tokenizer.eos_token_id).to(torch_device)
+
+def generate_text(model, tokenizer, prompt, generation_args):
+    inputs = tokenizer(prompt, return_tensors='pt').to(torch_device)
+    output = model.generate(**inputs, **generation_args)
+    return tokenizer.decode(output[0], skip_special_tokens=True)
+
+from transformers import set_seed
+set_seed(42)
+
+print("Welcome to the GPT-2 Q&A system!")
+print("You can ask any question and I'll provide an answer.")
+print("Type 'exit' to end the session.")
+
+while True:
+    user_question = input("\nYour Question: ")
+
+    if user_question.lower() == 'exit':
+        print("Goodbye!")
+        break
+    answer = generate_text(model, tokenizer, user_question, {'max_new_tokens': 100})
+    print("GPT-2's Answer:\n" + 100 * '-')
+    print(answer)
+    print("\n" + 100 * '=')
